@@ -21,6 +21,28 @@ app.get("/", (req, res) => {
     res.status(200).json({ message: "Hello World!" });
 });
 
+// Private Route
+app.get("/user/:id", checkToken, async (req, res) => {
+    const id = req.params.id;
+    const user = await User.findById(id, '-password');
+    if(!user) return res.status(404).json({ message: "User not found!" });
+    res.status(200).json({ user });
+});
+
+function checkToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(" ")[1];
+    if(!token) return res.status(401).json({ message: "Access denied!" });
+    try {
+        const secret = process.env.SECRET;
+        jwt.verify(token, secret);
+        next();
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ message: "Invalid token!" });
+    }
+}
+
 // Register User
 app.post("/auth/register", async(req, res) => {
     
@@ -34,6 +56,7 @@ app.post("/auth/register", async(req, res) => {
     
     if(password !== confirmPassword) return res.status(422).json({ message: "Passwords don't match!" });
 
+    // Check if user exists
     const userExists = await User.findOne({ email: email });
 
     if(userExists) return res.status(422).json({ message: "User already exists!" });
@@ -52,6 +75,36 @@ app.post("/auth/register", async(req, res) => {
     try {
         await user.save();
         res.status(201).json({ message: "User created sucessfully!" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "An error has occurred on the server. Try again later!" });
+    }
+    
+});
+
+// Login User
+app.post("/auth/login", async (req, res) => {
+
+    const { email, password } = req.body;
+
+    if(!email) return res.status(422).json({ message: "Email is required!" });
+
+    if(!password) return res.status(422).json({ message: "Password is required!" });
+
+    // Check if user exists
+    const user = await User.findOne({ email: email });
+
+    if(!user) return res.status(404).json({ message: "User not exists!" });
+
+    // Check if password match
+    const checkPassword = await bcrypt.compare(password, user.password);
+
+    if(!checkPassword) return res.status(422).json({ message: "Invalid password!" });
+
+    try {
+        const secret = process.env.SECRET;
+        const token = jwt.sign({ id: user._id }, secret);
+        res.status(200).json({ message: "Authentication sucessfull!", token });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "An error has occurred on the server. Try again later!" });
