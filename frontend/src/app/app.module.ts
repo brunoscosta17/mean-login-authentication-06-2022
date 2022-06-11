@@ -9,6 +9,7 @@ import { HomeComponent } from './modules/home/home.component';
 import { AuthenticationComponent } from './modules/authentication/authentication.component';
 import { TaskListComponent } from './modules/task-list/task-list.component';
 import { TaskFormComponent } from './modules/task-form/task-form.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,9 @@ import { TaskFormComponent } from './modules/task-form/task-form.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    FormsModule,
+    AppRoutingModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
