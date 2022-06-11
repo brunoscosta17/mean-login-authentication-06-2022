@@ -1,0 +1,17 @@
+header {
+  height: 70px;
+}
+
+.footer {
+  position: fixed;
+  /* height: 50px; */
+  background-color: rgba(12, 56, 109, 0.523);
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  margin-bottom: 0px;
+}
+
+.footer a {
+  color: white;
+}
