@@ -1,3 +1,5 @@
+// import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NotificationService } from './shared/services/notification.service';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -10,6 +12,7 @@ import { AuthenticationComponent } from './modules/authentication/authentication
 import { TaskListComponent } from './modules/task-list/task-list.component';
 import { TaskFormComponent } from './modules/task-form/task-form.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -23,11 +26,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   ],
   imports: [
     BrowserModule,
+    // BrowserAnimationsModule,
     FormsModule,
     AppRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    HttpClientModule,
   ],
-  providers: [],
+  exports: [BrowserModule],
+  providers: [NotificationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

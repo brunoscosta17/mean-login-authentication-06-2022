@@ -10,8 +10,17 @@ const jwt = require("jsonwebtoken");
 
 const app = express();
 
+const cors = require("cors");
+
+const corsOptions ={
+   origin:'*', 
+   credentials:true,            //access-control-allow-credentials:true
+   optionSuccessStatus:200,
+}
+
 // Config JSON response
 app.use(express.json());
+app.use(cors(corsOptions));
 
 // Models
 const User = require("./models/User");
@@ -25,14 +34,14 @@ app.get("/", (req, res) => {
 app.get("/user/:id", checkToken, async (req, res) => {
     const id = req.params.id;
     const user = await User.findById(id, '-password');
-    if(!user) return res.status(404).json({ message: "User not found!" });
+    if(!user) return res.status(404).json({ error: true, message: "User not found!" });
     res.status(200).json({ user });
 });
 
 function checkToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(" ")[1];
-    if(!token) return res.status(401).json({ message: "Access denied!" });
+    if(!token) return res.status(401).json({ error: true, message: "Access denied!" });
     try {
         const secret = process.env.SECRET;
         jwt.verify(token, secret);
@@ -59,7 +68,7 @@ app.post("/auth/register", async(req, res) => {
     // Check if user exists
     const userExists = await User.findOne({ email: email });
 
-    if(userExists) return res.status(422).json({ message: "User already exists!" });
+    if(userExists) return res.status(422).json({ error: true, message: "User already exists!" });
 
     // Create password
     const salt = await bcrypt.genSalt(12);
@@ -87,19 +96,19 @@ app.post("/auth/login", async (req, res) => {
 
     const { email, password } = req.body;
 
-    if(!email) return res.status(422).json({ message: "Email is required!" });
+    if(!email) return res.status(422).json({ error: true, message: "Email is required!" });
 
-    if(!password) return res.status(422).json({ message: "Password is required!" });
+    if(!password) return res.status(422).json({ error: true, message: "Password is required!" });
 
     // Check if user exists
     const user = await User.findOne({ email: email });
 
-    if(!user) return res.status(404).json({ message: "User not exists!" });
+    if(!user) return res.status(404).json({ error: true, message: "User not exists!" });
 
     // Check if password match
     const checkPassword = await bcrypt.compare(password, user.password);
 
-    if(!checkPassword) return res.status(422).json({ message: "Invalid password!" });
+    if(!checkPassword) return res.status(422).json({ error: true, message: "Invalid password!" });
 
     try {
         const secret = process.env.SECRET;
@@ -107,7 +116,7 @@ app.post("/auth/login", async (req, res) => {
         res.status(200).json({ message: "Authentication sucessfull!", token });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "An error has occurred on the server. Try again later!" });
+        res.status(500).json({ error: true, message: "An error has occurred on the server. Try again later!" });
     }
 
 });

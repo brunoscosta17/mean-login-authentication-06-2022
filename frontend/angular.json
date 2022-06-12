@@ -70,6 +70,10 @@
             "production": {
               "browserTarget": "frontend:build:production"
             },
+            "options": {
+              "browserTarget": "projectname:build",
+              "proxyConfig": "./proxy.config.json"
+            },
             "development": {
               "browserTarget": "frontend:build:development"
             }
