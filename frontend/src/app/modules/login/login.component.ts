@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { AccountService } from './../../shared/services/account.service';
 import { NotificationService } from './../../shared/services/notification.service';
 
+import Swal from 'sweetalert2'
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -32,19 +34,19 @@ export class LoginComponent implements OnInit {
     this.accountService
       .login(this.form.value)
       .subscribe((response) => {
-        console.log(response);
-        if(response.error) {
+        if(response && response.token) {
+          window.localStorage.setItem('token', response.token);
+          this.router.navigate(['']);
         }
       }, (error) => {
-        console.log(error);
+        console.error(error);
+        Swal.fire({
+          title: 'Erro!',
+          text: 'Dados incorretos!',
+          icon: 'error',
+          confirmButtonText: 'Fechar'
+        });
       });
-    // try {
-    //   const result = await this.accountService.login(this.form.value);
-    //   console.log(`login efetuado: ${result}`);
-    //   this.router.navigate(['']);
-    // } catch (error) {
-    //   console.error(error);
-    // }
   }
 
 }

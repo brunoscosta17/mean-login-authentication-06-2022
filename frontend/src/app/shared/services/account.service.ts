@@ -19,10 +19,8 @@ export class AccountService {
     return this.http.post(`${environment.api}/auth/login`, user);
   }
 
-  createAccount(account: any) {
-    return new Promise((resolve) => {
-      resolve(true);
-    })
+  createAccount(user: any): Observable<any> {
+    return this.http.post(`${environment.api}/auth/register`, user);
   }
 
 }

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 
 import { AccountService } from './../../shared/services/account.service';
 
+import Swal from 'sweetalert2'
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -29,8 +30,27 @@ export class RegisterComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  async onSubmit() {
-
+  onSubmit(): void {
+    this.accountService
+      .createAccount(this.form.value)
+      .subscribe((response) => {
+        Swal.fire({
+          position: 'top-end',
+          icon: 'success',
+          title: response.message,
+          showConfirmButton: false,
+          timer: 1500
+        });
+        this.router.navigate(['/login']);
+      }, (error) => {
+        console.error(error);
+        Swal.fire({
+          title: 'Error!',
+          text: error.message,
+          icon: 'error',
+          confirmButtonText: 'Close'
+        });
+      });
   }
 
 }
