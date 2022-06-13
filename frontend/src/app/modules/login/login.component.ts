@@ -37,14 +37,21 @@ export class LoginComponent implements OnInit {
         if(response && response.token) {
           window.localStorage.setItem('token', response.token);
           this.router.navigate(['']);
+          Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: response.message,
+            showConfirmButton: false,
+            timer: 1000
+          });
         }
       }, (error) => {
         console.error(error);
         Swal.fire({
-          title: 'Erro!',
-          text: 'Dados incorretos!',
+          title: 'Error!',
+          text: error.error.message,
           icon: 'error',
-          confirmButtonText: 'Fechar'
+          confirmButtonText: 'Close'
         });
       });
   }
